@@ -14,23 +14,23 @@ blog_router= APIRouter(
 
 
 @blog_router.get("/", status_code = status.HTTP_201_CREATED , response_model=list[blog_schemas.Showblog])
-def all(db:session =Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_curent_user)):
+def all(db:session =Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_current_user)):
     return blog.get_all(db)
     
  
  
 @blog_router.get("/{id}", status_code = status.HTTP_200_OK, response_model=blog_schemas.Showblog)
-def show(id : int,db : session = Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_curent_user)):
+def show(id : int,db : session = Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_current_user)):
     return blog.show(db, id)
 
 @blog_router.post("/", status_code = status.HTTP_201_CREATED)
-def create (request : blog_schemas.Blog, db:session = Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_curent_user)):
-    return blog.create(db, request)
+def create (request : blog_schemas.Blog, db:session = Depends(get_db),current_user: blog_models.User = Depends(oauth2.get_current_user)):
+    return blog.create(db, request, current_user.id)
 
 @blog_router.delete("/{id}", status_code= status.HTTP_204_NO_CONTENT)
-def destroy(id : int, db:session = Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_curent_user)):
+def destroy(id : int, db:session = Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_current_user)):
     return blog.destroy(db, id)
 
 @blog_router.put("/{id}", status_code = status.HTTP_202_ACCEPTED)
-def update(id : int,request : blog_schemas.Blog, db : session = Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_curent_user)):
+def update(id : int,request : blog_schemas.Blog, db : session = Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_current_user)):
     return blog.update(db, id, request)

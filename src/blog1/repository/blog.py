@@ -17,8 +17,8 @@ def show(db : session, id : int):
     return blog
 
 
-def create(db : session, request: blog_schemas.Blog):
-    new_blog = blog_models.Blog(title = request.title , body = request.body, user_id = 1)
+def create(db : session, request: blog_schemas.Blog, user_id: int):
+    new_blog = blog_models.Blog(title = request.title , body = request.body, user_id = user_id)
     db.add(new_blog)
     db.commit()
     db.refresh(new_blog)

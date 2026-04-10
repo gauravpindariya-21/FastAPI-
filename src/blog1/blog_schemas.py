@@ -8,7 +8,7 @@ class Blogbase(BaseModel):
     
     
 class Blog(Blogbase):
-    class config():
+    class Config():
         orm_mode = True 
     
    
@@ -25,9 +25,9 @@ class  User(BaseModel):
 class  ShowUser(BaseModel):
     name : str
     email : str
-    blogs : List[Blog] = None
+    blogs : List[Blog] = []
     
-    class config():
+    class Config():
         orm_mode = True
         
 class Showblog(BaseModel):
@@ -35,7 +35,7 @@ class Showblog(BaseModel):
     body : str
     owner : Optional[ShowUser] = None
     
-    class config():
+    class Config():
         orm_mode = True
         
 class Login(BaseModel):
