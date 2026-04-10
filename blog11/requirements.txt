@@ -2,6 +2,8 @@ fastapi
 uvicorn 
 passlib
 sqlalchemy
+python-jose
+python-multipart
 
 
 #pip3 install -r requirements.txt

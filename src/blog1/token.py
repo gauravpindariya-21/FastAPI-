@@ -15,11 +15,12 @@ def create_access_token(data: dict):
 
 def verify_token(token : str, credentials_exception):
     try:
-        pyload = jwt.decode(token, SECRET_KEY, algorithms = [ALGORITHM])
-        email : str = pyload.get("sub")
+        payload = jwt.decode(token, SECRET_KEY, algorithms = [ALGORITHM])
+        email : str = payload.get("sub")
         if email is None:
             raise credentials_exception
         token_data = blog_schemas.Tokendata(email = email)
+        return token_data
     except JWTError:
         raise credentials_exception
          
