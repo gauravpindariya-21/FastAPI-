@@ -13,9 +13,9 @@ blog_router= APIRouter(
 
 
 
-@blog_router.get("/", status_code = status.HTTP_201_CREATED , response_model=list[blog_schemas.Showblog])
-def all(db:session =Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_curent_user)):
-    return blog.get_all(db)
+@blog_router.get("/", status_code = status.HTTP_200_OK , response_model=list[blog_schemas.Showblog])
+def all(db:session =Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_curent_user), search: str = None):
+    return blog.get_all(db, search)
     
  
  
@@ -25,7 +25,7 @@ def show(id : int,db : session = Depends(get_db),current_user: blog_schemas.User
 
 @blog_router.post("/", status_code = status.HTTP_201_CREATED)
 def create (request : blog_schemas.Blog, db:session = Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_curent_user)):
-    return blog.create(db, request)
+    return blog.create(db, request, current_user.id)
 
 @blog_router.delete("/{id}", status_code= status.HTTP_204_NO_CONTENT)
 def destroy(id : int, db:session = Depends(get_db),current_user: blog_schemas.User = Depends(oauth2.get_curent_user)):

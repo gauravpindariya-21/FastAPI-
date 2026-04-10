@@ -3,8 +3,11 @@ from src.blog1 import blog_models, blog_schemas
 from fastapi import HTTPException , status
 
 
-def get_all(db : session):
-    blogs = db.query(blog_models.Blog).all()
+def get_all(db : session, search: str = None):
+    query = db.query(blog_models.Blog)
+    if search:
+        query = query.filter(blog_models.Blog.title.contains(search))
+    blogs = query.all()
     return blogs
 
 
@@ -17,8 +20,8 @@ def show(db : session, id : int):
     return blog
 
 
-def create(db : session, request: blog_schemas.Blog):
-    new_blog = blog_models.Blog(title = request.title , body = request.body, user_id = 1)
+def create(db : session, request: blog_schemas.Blog, user_id: int):
+    new_blog = blog_models.Blog(title = request.title , body = request.body, user_id = user_id)
     db.add(new_blog)
     db.commit()
     db.refresh(new_blog)

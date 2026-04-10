@@ -19,7 +19,7 @@ def verify_token(token : str, credentials_exception):
         email : str = pyload.get("sub")
         if email is None:
             raise credentials_exception
-        token_data = blog_schemas.Tokendata(email = email)
+        return blog_schemas.Tokendata(email = email)
     except JWTError:
         raise credentials_exception
          

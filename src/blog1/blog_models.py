@@ -11,6 +11,7 @@ class Blog(Base):
     user_id = Column(Integer ,ForeignKey("users.id") )
     
     owner = relationship ("User", back_populates = "blogs" )
+    comments = relationship("Comment", back_populates="blog")
 
 class User(Base):
     __tablename__ = "users"
@@ -24,3 +25,15 @@ class User(Base):
     code = Column(Integer)
     
     blogs = relationship("Blog" , back_populates = "owner")
+    comments = relationship("Comment", back_populates="commenter")
+
+class Comment(Base):
+    __tablename__ = "comments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    text = Column(String)
+    blog_id = Column(Integer, ForeignKey("blogs.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+
+    blog = relationship("Blog", back_populates="comments")
+    commenter = relationship("User", back_populates="comments")

@@ -8,7 +8,7 @@ class Blogbase(BaseModel):
     
     
 class Blog(Blogbase):
-    class config():
+    class Config:
         orm_mode = True 
     
    
@@ -27,7 +27,7 @@ class  ShowUser(BaseModel):
     email : str
     blogs : List[Blog] = None
     
-    class config():
+    class Config:
         orm_mode = True
         
 class Showblog(BaseModel):
@@ -35,7 +35,7 @@ class Showblog(BaseModel):
     body : str
     owner : Optional[ShowUser] = None
     
-    class config():
+    class Config:
         orm_mode = True
         
 class Login(BaseModel):
@@ -47,4 +47,18 @@ class Token(BaseModel):
     token_type : str
     
 class Tokendata(BaseModel):
-    email : Optional[str] = None 
+    email : Optional[str] = None
+
+class CommentBase(BaseModel):
+    text: str
+
+class CommentCreate(CommentBase):
+    blog_id: int
+
+class Comment(CommentBase):
+    id: int
+    blog_id: int
+    user_id: int
+
+    class Config:
+        orm_mode = True
