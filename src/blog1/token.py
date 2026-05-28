@@ -1,26 +1,35 @@
 from datetime import datetime, timedelta, timezone
-from jose import jwt , JWTError
+from jose import jwt, JWTError
 from . import blog_schemas
+from src.core.config import settings
 
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 def create_access_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
+    to_encode.update({"exp": expire, "type": "access"})
+    encoded_jwt = jwt.encode(to_encode, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
     return encoded_jwt
 
-def verify_token(token : str, credentials_exception):
+
+def create_refresh_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.refresh_token_expire_minutes)
+    to_encode.update({"exp": expire, "type": "refresh"})
+    encoded_jwt = jwt.encode(to_encode, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
+    return encoded_jwt
+
+
+def verify_token(token: str, credentials_exception, expected_type: str = "access"):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms = [ALGORITHM])
-        email : str = payload.get("sub")
+        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
+        email: str = payload.get("sub")
+        token_type: str = payload.get("type")
         if email is None:
             raise credentials_exception
-        token_data = blog_schemas.Tokendata(email = email)
+        if token_type != expected_type:
+            raise credentials_exception
+        token_data = blog_schemas.Tokendata(email=email, token_type=token_type)
         return token_data
     except JWTError:
         raise credentials_exception
-         

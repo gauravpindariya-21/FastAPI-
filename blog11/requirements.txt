@@ -4,6 +4,10 @@ passlib
 sqlalchemy
 python-jose
 python-multipart
+alembic
+pytest
+email-validator
+httpx
 
 
 #pip3 install -r requirements.txt

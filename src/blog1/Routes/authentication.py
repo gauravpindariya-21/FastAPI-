@@ -1,22 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from .. import blog_schemas, blog_models, token 
+from fastapi import APIRouter, Depends
+from .. import blog_schemas
 from src.utils import db
 from sqlalchemy.orm import session
-from src.utils.hashing import Hash
 from fastapi.security import OAuth2PasswordRequestForm
+from ..services import auth_service
 
 
 authentication_router = APIRouter(
     tags = ["Authentication"]
 )
 
-@authentication_router.post("/login")
-def login(request : OAuth2PasswordRequestForm = Depends() , db : session = Depends(db.get_db)):
-    user = db.query(blog_models.User).filter(blog_models.User.email == request.username).first()
-    if not user:
-        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND , detail = "invalid credentials")
-    if not  Hash.verify(user.password , request.password):
-        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "incorrect password.")
-    
-    access_token = token.create_access_token(data = {"sub":user.email})
-    return {"access_token" : access_token, "token_type" : "bearer"}
+
+@authentication_router.post("/login", response_model=blog_schemas.Token)
+def login(request: OAuth2PasswordRequestForm = Depends(), db: session = Depends(db.get_db)):
+    return auth_service.login_user(db, request.username, request.password)
+
+
+@authentication_router.post("/refresh", response_model=blog_schemas.Token)
+def refresh_token(request: blog_schemas.RefreshTokenRequest):
+    return auth_service.refresh_access_token(request.refresh_token)

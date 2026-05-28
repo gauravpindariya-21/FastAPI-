@@ -1,85 +1,83 @@
 # FastAPI Blog Application
 
-A simple blog application built with FastAPI, SQLAlchemy, and SQLite. This application supports user authentication, blog creation, and management.
+A blog API built with FastAPI, SQLAlchemy, and SQLite with JWT auth, refresh tokens, validation, ownership authorization, migrations, tests, Docker support, and CI.
 
-## Features
+## Key Improvements
 
-- **User Management**: Create users and retrieve user details with their associated blogs.
-- **Authentication**: Secure login using OAuth2 with JWT tokens.
-- **Blog Management**: CRUD operations (Create, Read, Update, Delete) for blogs.
-- **Database**: Uses SQLAlchemy ORM with SQLite for data storage.
-- **Security**: Password hashing using Passlib (bcrypt).
+- Environment-based config for DB and JWT settings
+- Access + refresh token authentication flow
+- User schema split (input/output) to avoid password leakage
+- Field validation for user and blog payloads
+- Ownership checks for blog update/delete
+- Standardized API error payloads
+- Service layer added between routes and repositories
+- Alembic migrations for schema management
+- Pytest test suite and GitHub Actions CI
+- Dockerfile and docker-compose for local container runs
 
-## Technologies Used
+## Setup
 
-- [FastAPI](https://fastapi.tiangolo.com/)
-- [SQLAlchemy](https://www.sqlalchemy.org/)
-- [Pydantic](https://docs.pydantic.dev/)
-- [SQLite](https://www.sqlite.org/)
-- [Passlib](https://passlib.readthedocs.io/)
-- [Python-jose](https://python-jose.readthedocs.io/)
-
-## Project Structure
-
-```text
-.
-├── blog11/
-│   └── requirements.txt     # Project dependencies
-├── src/
-│   ├── blog1/               # Core application logic
-│   │   ├── Routes/          # API route definitions (blog, user, auth)
-│   │   ├── repository/      # Database interaction logic
-│   │   ├── blog_models.py   # SQLAlchemy models
-│   │   ├── blog_schemas.py  # Pydantic schemas
-│   │   ├── token.py         # JWT token handling
-│   │   └── ...
-│   ├── utils/               # Utility functions (DB connection, hashing)
-│   └── main2.py             # Application entry point
-├── blog.db                  # SQLite database file
-└── README.md                # Project documentation
-```
-
-## Getting Started
-
-### 1. Install Dependencies
-
-It is recommended to use a virtual environment. Install the required packages using:
+### 1. Install dependencies
 
 ```bash
 pip install -r blog11/requirements.txt
 ```
 
-*Note: You may also need to install `python-jose[cryptography]` for JWT support.*
+### 2. Configure environment variables
 
-### 2. Run the Application
+```bash
+export APP_NAME="FastAPI Blog Application"
+export DATABASE_URL="sqlite:///./blog.db"
+export JWT_SECRET_KEY="replace-with-a-strong-secret"
+export JWT_ALGORITHM="HS256"
+export ACCESS_TOKEN_EXPIRE_MINUTES="30"
+export REFRESH_TOKEN_EXPIRE_MINUTES="10080"
+export AUTO_CREATE_TABLES="false"
+```
 
-Start the FastAPI server using Uvicorn:
+### 3. Run migrations
+
+```bash
+alembic upgrade head
+```
+
+### 4. Run app
 
 ```bash
 uvicorn src.main2:app --reload
 ```
 
-The API will be available at `http://127.0.0.1:8000`.
+## API Docs
 
-### 3. API Documentation
+- Swagger UI: `http://127.0.0.1:8000/docs`
+- ReDoc: `http://127.0.0.1:8000/redoc`
 
-Once the server is running, you can access the interactive API documentation:
-
-- **Swagger UI**: `http://127.0.0.1:8000/docs`
-- **ReDoc**: `http://127.0.0.1:8000/redoc`
-
-## API Endpoints
+## Endpoints
 
 ### Authentication
-- `POST /login`: Authenticate a user and receive an access token.
+- `POST /login` → returns `access_token` + `refresh_token`
+- `POST /refresh` → returns refreshed access token
 
 ### Users
-- `POST /user/`: Register a new user.
-- `GET /user/{id}`: Get details of a specific user.
+- `POST /user/` → create user (password never returned)
+- `GET /user/{id}` → fetch user and blog previews
 
-### Blogs
-- `GET /blog/`: Get all blogs (requires authentication).
-- `POST /blog/`: Create a new blog (requires authentication).
-- `GET /blog/{id}`: Get details of a specific blog (requires authentication).
-- `PUT /blog/{id}`: Update a blog (requires authentication).
-- `DELETE /blog/{id}`: Delete a blog (requires authentication).
+### Blogs (auth required)
+- `GET /blog/`
+- `POST /blog/`
+- `GET /blog/{id}`
+- `PUT /blog/{id}` (owner only)
+- `DELETE /blog/{id}` (owner only)
+
+## Tests
+
+```bash
+pytest -q
+python -m compileall src
+```
+
+## Docker
+
+```bash
+docker compose up --build
+```
