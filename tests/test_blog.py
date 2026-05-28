@@ -1,24 +1,4 @@
-def create_user(client, email: str, password: str = "password123"):
-    client.post(
-        "/user/",
-        json={
-            "name": "Blog User",
-            "email": email,
-            "password": password,
-            "address": "Address 1",
-            "phone": 1234567890,
-            "code": 101,
-        },
-    )
-
-
-def login(client, email: str, password: str = "password123") -> str:
-    response = client.post("/login", data={"username": email, "password": password})
-    return response.json()["access_token"]
-
-
-def auth_headers(token: str) -> dict[str, str]:
-    return {"Authorization": "Bearer " + token}
+from tests.conftest import auth_headers, create_user, login
 
 
 def test_blog_owner_can_update_and_delete(client):

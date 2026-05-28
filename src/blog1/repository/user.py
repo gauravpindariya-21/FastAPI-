@@ -16,7 +16,7 @@ def create(request: blog_schemas.UserCreate, db: session, hash_service):
         phone=request.phone,
         code=request.code,
     )
-    setattr(new_user, "password", hash_service.bcrypt(request.password))
+    new_user.password = hash_service.bcrypt(request.password)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -26,5 +26,5 @@ def create(request: blog_schemas.UserCreate, db: session, hash_service):
 def get(db: session, id: int):
     user = db.query(blog_models.User).options(joinedload(blog_models.User.blogs)).filter(blog_models.User.id == id).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"user with id {id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
     return user

@@ -13,13 +13,13 @@ blog_router= APIRouter(
 
 
 
-@blog_router.get("/", status_code=status.HTTP_200_OK, response_model=list[blog_schemas.BlogWithOwner])
+@blog_router.get("/", response_model=list[blog_schemas.BlogWithOwner])
 def all(db: session = Depends(get_db), current_user: blog_models.User = Depends(oauth2.get_current_user)):
     return blog_service.list_blogs(db)
     
  
  
-@blog_router.get("/{id}", status_code=status.HTTP_200_OK, response_model=blog_schemas.BlogWithOwner)
+@blog_router.get("/{id}", response_model=blog_schemas.BlogWithOwner)
 def show(id: int, db: session = Depends(get_db), current_user: blog_models.User = Depends(oauth2.get_current_user)):
     return blog_service.get_blog(db, id)
 

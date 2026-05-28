@@ -1,9 +1,15 @@
 from collections.abc import Generator
+from pathlib import Path
+import sys
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.blog1 import blog_models
 from src.main2 import app
@@ -37,3 +43,26 @@ def client(db_session) -> Generator:
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
+
+
+def create_user(client: TestClient, email: str, password: str = "password123"):
+    return client.post(
+        "/user/",
+        json={
+            "name": "Test User",
+            "email": email,
+            "password": password,
+            "address": "Address 1",
+            "phone": 1234567890,
+            "code": 101,
+        },
+    )
+
+
+def login(client: TestClient, email: str, password: str = "password123") -> str:
+    response = client.post("/login", data={"username": email, "password": password})
+    return response.json()["access_token"]
+
+
+def auth_headers(token: str) -> dict[str, str]:
+    return {"Authorization": "Bearer " + token}

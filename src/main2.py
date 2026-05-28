@@ -31,7 +31,14 @@ async def add_request_context(request, call_next):
     response = await call_next(request)
     duration_ms = (perf_counter() - started_at) * 1000
     response.headers["X-Request-ID"] = request_id
-    logger.info("%s %s %s %.2fms request_id=%s", request.method, request.url.path, response.status_code, duration_ms, request_id)
+    logger.info(
+        "request.completed method=%s path=%s status=%s duration_ms=%.2f request_id=%s",
+        request.method,
+        request.url.path,
+        response.status_code,
+        duration_ms,
+        request_id,
+    )
     return response
 
 

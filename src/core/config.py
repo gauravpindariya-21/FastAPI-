@@ -1,4 +1,5 @@
 import os
+import logging
 
 
 def _to_bool(value: str | None, default: bool = False) -> bool:
@@ -19,3 +20,6 @@ class Settings:
 
 
 settings = Settings()
+
+if settings.jwt_secret_key == "change-this-in-production":
+    logging.getLogger("app").warning("JWT_SECRET_KEY is using the insecure default value; set a strong secret in production.")

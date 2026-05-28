@@ -12,7 +12,7 @@ def show(db: session, id: int):
     blog = db.query(blog_models.Blog).options(joinedload(blog_models.Blog.owner)).filter(blog_models.Blog.id == id).first()
 
     if not blog:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"blog with id {id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Blog with id {id} not found")
 
     return blog
 
@@ -29,7 +29,7 @@ def destroy(db: session, id: int, current_user_id: int):
     blog = db.query(blog_models.Blog).filter(blog_models.Blog.id == id)
 
     if not blog.first():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"blog with id {id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Blog with id {id} not found")
 
     if blog.first().user_id != current_user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this blog")
@@ -43,7 +43,7 @@ def update(db: session, id: int, request: blog_schemas.BlogCreate, current_user_
     blog = db.query(blog_models.Blog).filter(blog_models.Blog.id == id)
 
     if not blog.first():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"blog with id {id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Blog with id {id} not found")
 
     if blog.first().user_id != current_user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this blog")

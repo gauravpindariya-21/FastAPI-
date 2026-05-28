@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 class BlogBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
-    body: str = Field(..., min_length=1)
+    body: str = Field(..., min_length=1, max_length=50000)
 
 
 class BlogCreate(BlogBase):

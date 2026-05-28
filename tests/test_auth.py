@@ -1,15 +1,4 @@
-def create_user(client, email: str, password: str = "password123"):
-    return client.post(
-        "/user/",
-        json={
-            "name": "Auth User",
-            "email": email,
-            "password": password,
-            "address": "Address 1",
-            "phone": 1234567890,
-            "code": 101,
-        },
-    )
+from tests.conftest import create_user
 
 
 def test_login_returns_access_and_refresh_token(client):
